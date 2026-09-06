@@ -148,14 +148,14 @@ public class ChangeFormQust extends GeneralElement implements ChangeFormData {
         return false;
     }
 
-    final private ChangeFormFlags CHANGEFORMFLAGS;
+        final private ChangeFormFlags CHANGEFORMFLAGS;
     final private Flags.Short QUEST_FLAGS;
     final private float SCRIPT_DELAY;
-    final private QuestStage[] QUEST_STAGES;
+    private QuestStage[] QUEST_STAGES;
     final private QuestObjective[] QUEST_OBJECTIVES;
     final private QuestRunData QUEST_RUN_DATA;
 
-    final private byte ALREADY_RUN;
+    private byte ALREADY_RUN;
     
     static private class QuestStage extends GeneralElement {
 
