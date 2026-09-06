@@ -36,8 +36,13 @@ public class StagePatcher {
         ESS.Result result = ESS.readESS(inputPath, model);
         ESS ess = result.ESS;
 
-        RefID refID = ess.getContext().makeRefID(formID);
-        ChangeForm form = ess.getChangeForms().getChangeForm(refID);
+       ChangeForm form = null;
+for (ChangeForm cf : ess.getChangeForms()) {
+    if (cf.getRefID().equals(formID)) {
+        form = cf;
+        break;
+    }
+}
 
         if (form == null) {
             System.out.println("ChangeForm not found for formID " + args[1] + " - is the quest running in this save?");
