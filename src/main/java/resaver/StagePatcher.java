@@ -10,6 +10,7 @@ import resaver.ess.ChangeFormQust;
 import resaver.ess.Flags;
 import resaver.ess.RefID;
 import resaver.ess.ModelBuilder;
+import resaver.ProgressModel;
 
 public class StagePatcher {
 
@@ -31,7 +32,7 @@ public class StagePatcher {
             stages[i][1] = 1; // status: executed
         }
 
-        ModelBuilder model = new ModelBuilder();
+        ModelBuilder model = new ModelBuilder(new ProgressModel());
         ESS.Result result = ESS.readESS(inputPath, model);
         ESS ess = result.ESS;
 
