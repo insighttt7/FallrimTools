@@ -9,7 +9,7 @@ import resaver.ess.ChangeFormData;
 import resaver.ess.ChangeFormQust;
 import resaver.ess.Flags;
 import resaver.ess.RefID;
-import resaver.gui.ModelBuilder;
+import resaver.ess.ModelBuilder;
 
 public class StagePatcher {
 
