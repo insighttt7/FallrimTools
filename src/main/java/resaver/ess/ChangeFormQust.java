@@ -105,7 +105,24 @@ public class ChangeFormQust extends GeneralElement implements ChangeFormData {
     public ChangeFormFlags getChangeFormFlags() {
         return this.CHANGEFORMFLAGS;
     }
-
+    /**
+     * Replaces the quest's stage history and already-run flag directly,
+     * without going through normal stage advancement. Used to restore a
+     * quest's stage history without re-running any stage logic.
+     *
+     * @param stages Array of {stage, status} pairs. Status byte 1 means
+     *               the stage is marked as executed.
+     * @param alreadyRun Whether to mark the quest as already having run.
+     */
+        public void setStagesDirect(short[][] stages, boolean alreadyRun) {
+        Objects.requireNonNull(stages);
+        QuestStage[] newStages = new QuestStage[stages.length];
+        for (int i = 0; i < stages.length; i++) {
+            newStages[i] = new QuestStage((short) stages[i][0], (byte) stages[i][1]);
+        }
+        this.QUEST_STAGES = this.addValue("QUEST_STAGES", newStages);
+        this.ALREADY_RUN = this.addValue("ALREADY_RUN", (byte) (alreadyRun ? 1 : 0));
+    }
     /**
      * @return String representation.
      */
@@ -157,11 +174,16 @@ public class ChangeFormQust extends GeneralElement implements ChangeFormData {
 
     private byte ALREADY_RUN;
     
-    static private class QuestStage extends GeneralElement {
+        static private class QuestStage extends GeneralElement {
 
         public QuestStage(ByteBuffer input, ESS.ESSContext context) throws ElementException{
             this.STAGE = super.readShort(input, "STAGE");
             this.STATUS = super.readElement(input, "STATUS", Flags::readByteFlags);
+        }
+
+        public QuestStage(short stage, byte status) {
+            this.STAGE = this.addValue("STAGE", stage);
+            this.STATUS = this.addValue("STATUS", new Flags.Byte(status));
         }
 
         @Override
