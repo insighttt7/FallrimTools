@@ -77,7 +77,6 @@ for (ChangeForm cf : ess.getChangeForms()) {
 int newFlagsValue = existingFlags | (1 << 31) | (1 << 26);
 Flags.Int newFlags = new Flags.Int(newFlagsValue); // CHANGE_QUEST_STAGES bit
         form.updateRawData(qust, newFlags);
-        form.updateRawData(qust, newFlags);
 
 // --- Create MQ302FillAliases ChangeForm from scratch ---
 int fillAliasesRaw = 0x4876E6;
@@ -112,8 +111,5 @@ ess.getChangeForms().add(fillForm);
 
 ESS.writeESS(ess, outputPath, false);
 System.out.println("Done. Wrote " + outputPath);
-
-        ESS.writeESS(ess, outputPath, false);
-        System.out.println("Done. Wrote " + outputPath);
     }
 }
