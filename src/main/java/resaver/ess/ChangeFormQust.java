@@ -134,6 +134,11 @@ public class ChangeFormQust extends GeneralElement implements ChangeFormData {
     public void setQuestFlagsDirect(short flagsValue) {
         this.QUEST_FLAGS = this.addValue("QUEST_FLAGS", new Flags.Short(flagsValue));
     }
+    
+    public void setObjectivesEmpty() {
+    this.addValue("QUEST_OBJECTIVES_COUNT", new VSVal(0));
+    this.QUEST_OBJECTIVES = this.addValue("QUEST_OBJECTIVES", new QuestObjective[0]);
+}
     /**
      * @return String representation.
      */
@@ -180,7 +185,7 @@ public class ChangeFormQust extends GeneralElement implements ChangeFormData {
     private Flags.Short QUEST_FLAGS;
     final private float SCRIPT_DELAY;
     private QuestStage[] QUEST_STAGES;
-    final private QuestObjective[] QUEST_OBJECTIVES;
+    private QuestObjective[] QUEST_OBJECTIVES;
     final private QuestRunData QUEST_RUN_DATA;
 
     private byte ALREADY_RUN;
