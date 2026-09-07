@@ -120,19 +120,20 @@ public class ChangeFormQust extends GeneralElement implements ChangeFormData {
      *               the stage is marked as executed.
      * @param alreadyRun Whether to mark the quest as already having run.
      */
-        public void setStagesDirect(short[][] stages, boolean alreadyRun) {
-    Objects.requireNonNull(stages);
-    QuestStage[] newStages = new QuestStage[stages.length];
-    for (int i = 0; i < stages.length; i++) {
-        newStages[i] = new QuestStage((short) stages[i][0], (byte) stages[i][1]);
+            public void setStagesDirect(short[][] stages, boolean alreadyRun) {
+        Objects.requireNonNull(stages);
+        QuestStage[] newStages = new QuestStage[stages.length];
+        for (int i = 0; i < stages.length; i++) {
+            newStages[i] = new QuestStage((short) stages[i][0], (byte) stages[i][1]);
+        }
+        this.addValue("QUEST_STAGES_COUNT", new VSVal(stages.length));
+        this.QUEST_STAGES = this.addValue("QUEST_STAGES", newStages);
+        this.ALREADY_RUN = this.addValue("ALREADY_RUN", (byte) (alreadyRun ? 1 : 0));
     }
-            public void setQuestFlagsDirect(short flagsValue) {
-    this.QUEST_FLAGS = this.addValue("QUEST_FLAGS", new Flags.Short(flagsValue));
-}
-    this.addValue("QUEST_STAGES_COUNT", new VSVal(stages.length));
-    this.QUEST_STAGES = this.addValue("QUEST_STAGES", newStages);
-    this.ALREADY_RUN = this.addValue("ALREADY_RUN", (byte) (alreadyRun ? 1 : 0));
-}
+
+    public void setQuestFlagsDirect(short flagsValue) {
+        this.QUEST_FLAGS = this.addValue("QUEST_FLAGS", new Flags.Short(flagsValue));
+    }
     /**
      * @return String representation.
      */
