@@ -72,13 +72,19 @@ public class ChangeFormQust extends GeneralElement implements ChangeFormData {
                     ? super.readFloat(input, "SCRIPT_DELAY")
                     : Float.NaN;
             
-            this.QUEST_STAGES = flags.getFlag(CHANGE_QUEST_STAGES)
-                    ? (QuestStage[]) super.readVSElemArray(input, "QUEST_STAGES", i -> new QuestStage(i, context))
-                    : null;
+            if (flags.getFlag(CHANGE_QUEST_STAGES)) {
+    Element[] stagesRaw = super.readVSElemArray(input, "QUEST_STAGES", i -> new QuestStage(i, context));
+    this.QUEST_STAGES = java.util.Arrays.copyOf(stagesRaw, stagesRaw.length, QuestStage[].class);
+} else {
+    this.QUEST_STAGES = null;
+}
                 
-            this.QUEST_OBJECTIVES = flags.getFlag(CHANGE_QUEST_OBJECTIVES)
-                    ? (QuestObjective[]) super.readVSElemArray(input, "QUEST_OBJECTIVES", i -> new QuestObjective(i, context))
-                    : null;
+            if (flags.getFlag(CHANGE_QUEST_OBJECTIVES)) {
+    Element[] objectivesRaw = super.readVSElemArray(input, "QUEST_OBJECTIVES", i -> new QuestObjective(i, context));
+    this.QUEST_OBJECTIVES = java.util.Arrays.copyOf(objectivesRaw, objectivesRaw.length, QuestObjective[].class);
+} else {
+    this.QUEST_OBJECTIVES = null;
+}
             
             this.QUEST_RUN_DATA = flags.getFlag(CHANGE_QUEST_RUNDATA)
                     ? new QuestRunData(input, context)
