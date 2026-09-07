@@ -73,9 +73,10 @@ for (ChangeForm cf : ess.getChangeForms()) {
         ChangeFormQust qust = (ChangeFormQust) data;
         qust.setStagesDirect(stages, true);
         qust.setQuestFlagsDirect((short) 0x0102);
+        qust.setObjectivesEmpty();
 
         int existingFlags = form.getChangeFlags().FLAGS;
-int newFlagsValue = existingFlags | (1 << 31) | (1 << 26);
+int newFlagsValue = existingFlags | (1 << 31) | (1 << 26) | (1 << 29);
 Flags.Int newFlags = new Flags.Int(newFlagsValue); // CHANGE_QUEST_STAGES bit
         form.updateRawData(qust, newFlags);
 
