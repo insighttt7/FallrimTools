@@ -11,6 +11,8 @@ import resaver.ess.Flags;
 import resaver.ess.RefID;
 import resaver.ess.ModelBuilder;
 import resaver.ProgressModel;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class StagePatcher {
 
@@ -75,6 +77,41 @@ for (ChangeForm cf : ess.getChangeForms()) {
 int newFlagsValue = existingFlags | (1 << 31) | (1 << 26);
 Flags.Int newFlags = new Flags.Int(newFlagsValue); // CHANGE_QUEST_STAGES bit
         form.updateRawData(qust, newFlags);
+        form.updateRawData(qust, newFlags);
+
+// --- Create MQ302FillAliases ChangeForm from scratch ---
+int fillAliasesRaw = 0x4876E6;
+
+ByteBuffer headerBuf = ByteBuffer.allocate(11).order(ByteOrder.LITTLE_ENDIAN);
+headerBuf.put((byte) ((fillAliasesRaw >> 16) & 0xFF));
+headerBuf.put((byte) ((fillAliasesRaw >> 8) & 0xFF));
+headerBuf.put((byte) (fillAliasesRaw & 0xFF));
+headerBuf.putInt(0);
+headerBuf.put((byte) 8);
+headerBuf.put((byte) 78);
+headerBuf.put((byte) 0);
+headerBuf.put((byte) 0);
+((java.nio.Buffer) headerBuf).flip();
+
+ChangeForm fillForm = new ChangeForm(headerBuf, ess.getContext());
+
+ByteBuffer bodyBuf = ByteBuffer.allocate(7).order(ByteOrder.LITTLE_ENDIAN);
+bodyBuf.putShort((short) 0x1100);
+bodyBuf.put((byte) 0x04);
+bodyBuf.putShort((short) 10);
+bodyBuf.put((byte) 1);
+bodyBuf.put((byte) 1);
+((java.nio.Buffer) bodyBuf).flip();
+
+Flags.Int fillFlags = new Flags.Int((1 << 1) | (1 << 26) | (1 << 31));
+ChangeFormQust fillQust = new ChangeFormQust(bodyBuf, fillFlags, ess.getContext());
+
+fillForm.updateRawData(fillQust, fillFlags);
+ess.getChangeForms().add(fillForm);
+// --- end MQ302FillAliases ---
+
+ESS.writeESS(ess, outputPath, false);
+System.out.println("Done. Wrote " + outputPath);
 
         ESS.writeESS(ess, outputPath, false);
         System.out.println("Done. Wrote " + outputPath);
