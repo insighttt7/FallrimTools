@@ -58,7 +58,9 @@ for (ChangeForm cf : ess.getChangeForms()) {
         ChangeFormQust qust = (ChangeFormQust) data;
         qust.setStagesDirect(stages, true);
 
-        Flags.Int newFlags = form.getChangeFlags().with(31); // CHANGE_QUEST_STAGES bit
+        int existingFlags = form.getChangeFlags().FLAGS;
+int newFlagsValue = existingFlags | (1 << 31) | (1 << 26);
+Flags.Int newFlags = new Flags.Int(newFlagsValue); // CHANGE_QUEST_STAGES bit
         form.updateRawData(qust, newFlags);
 
         ESS.writeESS(ess, outputPath, false);
