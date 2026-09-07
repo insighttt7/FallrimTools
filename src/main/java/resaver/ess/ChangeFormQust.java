@@ -126,6 +126,9 @@ public class ChangeFormQust extends GeneralElement implements ChangeFormData {
     for (int i = 0; i < stages.length; i++) {
         newStages[i] = new QuestStage((short) stages[i][0], (byte) stages[i][1]);
     }
+            public void setQuestFlagsDirect(short flagsValue) {
+    this.QUEST_FLAGS = this.addValue("QUEST_FLAGS", new Flags.Short(flagsValue));
+}
     this.addValue("QUEST_STAGES_COUNT", new VSVal(stages.length));
     this.QUEST_STAGES = this.addValue("QUEST_STAGES", newStages);
     this.ALREADY_RUN = this.addValue("ALREADY_RUN", (byte) (alreadyRun ? 1 : 0));
@@ -173,7 +176,7 @@ public class ChangeFormQust extends GeneralElement implements ChangeFormData {
     }
 
         final private ChangeFormFlags CHANGEFORMFLAGS;
-    final private Flags.Short QUEST_FLAGS;
+    private Flags.Short QUEST_FLAGS;
     final private float SCRIPT_DELAY;
     private QuestStage[] QUEST_STAGES;
     final private QuestObjective[] QUEST_OBJECTIVES;
