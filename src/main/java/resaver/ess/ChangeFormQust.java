@@ -115,14 +115,15 @@ public class ChangeFormQust extends GeneralElement implements ChangeFormData {
      * @param alreadyRun Whether to mark the quest as already having run.
      */
         public void setStagesDirect(short[][] stages, boolean alreadyRun) {
-        Objects.requireNonNull(stages);
-        QuestStage[] newStages = new QuestStage[stages.length];
-        for (int i = 0; i < stages.length; i++) {
-            newStages[i] = new QuestStage((short) stages[i][0], (byte) stages[i][1]);
-        }
-        this.QUEST_STAGES = this.addValue("QUEST_STAGES", newStages);
-        this.ALREADY_RUN = this.addValue("ALREADY_RUN", (byte) (alreadyRun ? 1 : 0));
+    Objects.requireNonNull(stages);
+    QuestStage[] newStages = new QuestStage[stages.length];
+    for (int i = 0; i < stages.length; i++) {
+        newStages[i] = new QuestStage((short) stages[i][0], (byte) stages[i][1]);
     }
+    this.addValue("QUEST_STAGES_COUNT", new VSVal(stages.length));
+    this.QUEST_STAGES = this.addValue("QUEST_STAGES", newStages);
+    this.ALREADY_RUN = this.addValue("ALREADY_RUN", (byte) (alreadyRun ? 1 : 0));
+}
     /**
      * @return String representation.
      */
