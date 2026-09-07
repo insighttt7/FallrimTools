@@ -15,26 +15,39 @@ import resaver.ProgressModel;
 public class StagePatcher {
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 3) {
-            System.out.println("Usage: StagePatcher <input.ess> <formID_hex> <output.ess> <stage1,stage2,...>");
-            System.out.println("Example: StagePatcher save.ess D9B64 output.ess 10,20,30,200");
-            return;
+        if (args.length < 1) {
+    System.out.println("Usage: StagePatcher <input.ess> --list");
+    System.out.println("   or: StagePatcher <input.ess> <formID_hex> <output.ess> <stage1,stage2,...>");
+    return;
+}
+Path inputPath = Paths.get(args[0]);
+
+ModelBuilder modelEarly = new ModelBuilder(new ProgressModel());
+ESS.Result resultEarly = ESS.readESS(inputPath, modelEarly);
+ESS essEarly = resultEarly.ESS;
+
+if (args.length >= 2 && args[1].equals("--list")) {
+    for (ChangeForm cf : essEarly.getChangeForms()) {
+        if (cf.getType() == ChangeForm.Type.QUST) {
+            System.out.println("raw=" + cf.getRefID().toRaw()
+                    + " hex=" + cf.getRefID().toHex()
+                    + " formid=" + Integer.toHexString(cf.getRefID().FORMID)
+                    + " str=" + cf.getRefID().toString());
         }
+    }
+    return;
+}
 
-        Path inputPath = Paths.get(args[0]);
-        int formID = (int) Long.parseLong(args[1], 16);
-        Path outputPath = Paths.get(args[2]);
-        String[] stageParts = args[3].split(",");
-
+int formID = (int) Long.parseLong(args[1], 16);
+Path outputPath = Paths.get(args[2]);
+String[] stageParts = args[3].split(",");
         short[][] stages = new short[stageParts.length][2];
         for (int i = 0; i < stageParts.length; i++) {
             stages[i][0] = Short.parseShort(stageParts[i].trim());
             stages[i][1] = 1; // status: executed
         }
 
-        ModelBuilder model = new ModelBuilder(new ProgressModel());
-        ESS.Result result = ESS.readESS(inputPath, model);
-        ESS ess = result.ESS;
+        ESS ess = essEarly;
 
        ChangeForm form = null;
 for (ChangeForm cf : ess.getChangeForms()) {
