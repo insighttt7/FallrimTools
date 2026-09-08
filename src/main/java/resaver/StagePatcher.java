@@ -83,7 +83,18 @@ for (ChangeForm cf : ess.getChangeForms()) {
     short flagsValue = (short) Integer.parseInt(args[4], 16);
     qust.setQuestFlagsDirect(flagsValue);
 }
-qust.setObjectivesEmpty();
+if (args.length >= 7 && !args[6].isEmpty()) {
+    String[] objParts = args[6].split(",");
+    int[][] objectives = new int[objParts.length][2];
+    for (int i = 0; i < objParts.length; i++) {
+        String[] pair = objParts[i].split(":");
+        objectives[i][0] = Integer.parseInt(pair[0].trim());
+        objectives[i][1] = Integer.parseInt(pair[1].trim());
+    }
+    qust.setObjectivesDirect(objectives);
+} else {
+    qust.setObjectivesEmpty();
+}
 
         int existingFlags = form.getChangeFlags().FLAGS;
 int newFlagsValue = existingFlags | (1 << 31) | (1 << 26) | (1 << 29);
