@@ -45,9 +45,16 @@ Path outputPath = Paths.get(args[2]);
 String[] stageParts = args[3].split(",");
         short[][] stages = new short[stageParts.length][2];
         for (int i = 0; i < stageParts.length; i++) {
-            stages[i][0] = Short.parseShort(stageParts[i].trim());
-            stages[i][1] = 1; // status: executed
-        }
+    String part = stageParts[i].trim();
+    if (part.contains(":")) {
+        String[] pair = part.split(":");
+        stages[i][0] = Short.parseShort(pair[0].trim());
+        stages[i][1] = Short.parseShort(pair[1].trim());
+    } else {
+        stages[i][0] = Short.parseShort(part);
+        stages[i][1] = 1;
+    }
+}
 
         ESS ess = essEarly;
 
