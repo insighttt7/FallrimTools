@@ -72,8 +72,11 @@ for (ChangeForm cf : ess.getChangeForms()) {
 
         ChangeFormQust qust = (ChangeFormQust) data;
         qust.setStagesDirect(stages, true);
-        qust.setQuestFlagsDirect((short) 0x0102);
-        qust.setObjectivesEmpty();
+       if (args.length >= 5) {
+    short flagsValue = (short) Integer.parseInt(args[4], 16);
+    qust.setQuestFlagsDirect(flagsValue);
+}
+qust.setObjectivesEmpty();
 
         int existingFlags = form.getChangeFlags().FLAGS;
 int newFlagsValue = existingFlags | (1 << 31) | (1 << 26) | (1 << 29);
