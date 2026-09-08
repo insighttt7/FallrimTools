@@ -139,6 +139,16 @@ public class ChangeFormQust extends GeneralElement implements ChangeFormData {
     this.addValue("QUEST_OBJECTIVES_COUNT", new VSVal(0));
     this.QUEST_OBJECTIVES = this.addValue("QUEST_OBJECTIVES", new QuestObjective[0]);
 }
+
+    public void setObjectivesDirect(int[][] objectives) {
+    Objects.requireNonNull(objectives);
+    this.addValue("QUEST_OBJECTIVES_COUNT", new VSVal(objectives.length));
+    QuestObjective[] newObjectives = new QuestObjective[objectives.length];
+    for (int i = 0; i < objectives.length; i++) {
+        newObjectives[i] = new QuestObjective(objectives[i][0], objectives[i][1]);
+    }
+    this.QUEST_OBJECTIVES = this.addValue("QUEST_OBJECTIVES", newObjectives);
+}
     /**
      * @return String representation.
      */
@@ -217,6 +227,11 @@ public class ChangeFormQust extends GeneralElement implements ChangeFormData {
             this.UNK1 = super.readInt(input, "UNK1");
             this.UNK2 = super.readInt(input, "UNK2");
         }
+
+            public QuestObjective(int unk1, int unk2) {
+        this.UNK1 = this.addValue("UNK1", unk1);
+        this.UNK2 = this.addValue("UNK2", unk2);
+    }
 
         @Override
         public String toString() {
