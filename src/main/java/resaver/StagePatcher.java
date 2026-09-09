@@ -40,6 +40,54 @@ if (args.length >= 2 && args[1].equals("--list")) {
     return;
 }
 
+        if (args.length >= 4 && args[1].equals("--merge")) {
+    Path targetPath = Paths.get(args[2]);
+    String[] formIDsToMerge = args[3].split(",");
+    Path mergeOutput = Paths.get(args[4]);
+
+    ModelBuilder targetModel = new ModelBuilder(new ProgressModel());
+    ESS.Result targetResult = ESS.readESS(targetPath, targetModel);
+    ESS targetEss = targetResult.ESS;
+
+    for (String formIDStr : formIDsToMerge) {
+        int mergeFormID = (int) Long.parseLong(formIDStr.trim(), 16);
+
+        ChangeForm donorForm = null;
+        for (ChangeForm cf : essEarly.getChangeForms()) {
+            if (cf.getRefID().equals(mergeFormID)) {
+                donorForm = cf;
+                break;
+            }
+        }
+        if (donorForm == null) {
+            System.out.println("Donor ChangeForm not found for formID " + formIDStr);
+            continue;
+        }
+
+        ChangeForm targetForm = null;
+        for (ChangeForm cf : targetEss.getChangeForms()) {
+            if (cf.getRefID().equals(mergeFormID)) {
+                targetForm = cf;
+                break;
+            }
+        }
+
+        ChangeFormData donorData = donorForm.getData(Optional.empty(), essEarly.getContext(), false);
+
+        if (targetForm != null) {
+            targetForm.updateRawData(donorData, donorForm.getChangeFlags());
+            System.out.println("Merged (replaced) formID " + formIDStr);
+        } else {
+            targetEss.getChangeForms().add(donorForm);
+            System.out.println("Merged (added new) formID " + formIDStr);
+        }
+    }
+
+    ESS.writeESS(targetEss, mergeOutput, false);
+    System.out.println("Merge done. Wrote " + mergeOutput);
+    return;
+}
+
 int formID = (int) Long.parseLong(args[1], 16);
 Path outputPath = Paths.get(args[2]);
 String[] stageParts = args[3].split(",");
