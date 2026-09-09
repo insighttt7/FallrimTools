@@ -64,22 +64,14 @@ if (args.length >= 2 && args[1].equals("--list")) {
             continue;
         }
 
-        ChangeForm targetForm = null;
-        for (ChangeForm cf : targetEss.getChangeForms()) {
-            if (cf.getRefID().equals(mergeFormID)) {
-                targetForm = cf;
-                break;
-            }
-        }
+        boolean removed = targetEss.getChangeForms().removeIf(cf -> cf.getRefID().equals(mergeFormID));
 
-        ChangeFormData donorData = donorForm.getData(Optional.empty(), essEarly.getContext(), false);
+        targetEss.getChangeForms().add(donorForm);
 
-        if (targetForm != null) {
-            targetForm.updateRawData(donorData, donorForm.getChangeFlags());
-            System.out.println("Merged (replaced) formID " + formIDStr);
+        if (removed) {
+            System.out.println("Merged (removed old + added new) formID " + formIDStr);
         } else {
-            targetEss.getChangeForms().add(donorForm);
-            System.out.println("Merged (added new) formID " + formIDStr);
+            System.out.println("Merged (added new, no old form existed) formID " + formIDStr);
         }
     }
 
