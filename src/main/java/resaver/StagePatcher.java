@@ -1,4 +1,5 @@
 package resaver;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -12,7 +13,9 @@ import resaver.ess.ModelBuilder;
 import resaver.ProgressModel;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
 public class StagePatcher {
+
     public static void main(String[] args) throws Exception {
         if (args.length < 1) {
     System.out.println("Usage: StagePatcher <input.ess> --list");
@@ -20,9 +23,11 @@ public class StagePatcher {
     return;
 }
 Path inputPath = Paths.get(args[0]);
+
 ModelBuilder modelEarly = new ModelBuilder(new ProgressModel());
 ESS.Result resultEarly = ESS.readESS(inputPath, modelEarly);
 ESS essEarly = resultEarly.ESS;
+
 if (args.length >= 2 && args[1].equals("--list")) {
     for (ChangeForm cf : essEarly.getChangeForms()) {
         if (cf.getType() == ChangeForm.Type.QUST) {
@@ -34,6 +39,7 @@ if (args.length >= 2 && args[1].equals("--list")) {
     }
     return;
 }
+
 int formID = (int) Long.parseLong(args[1], 16);
 Path outputPath = Paths.get(args[2]);
 String[] stageParts = args[3].split(",");
@@ -49,7 +55,9 @@ String[] stageParts = args[3].split(",");
         stages[i][1] = 1;
     }
 }
+
         ESS ess = essEarly;
+
        ChangeForm form = null;
 for (ChangeForm cf : ess.getChangeForms()) {
     if (cf.getRefID().equals(formID)) {
@@ -57,15 +65,18 @@ for (ChangeForm cf : ess.getChangeForms()) {
         break;
     }
 }
+
         if (form == null) {
             System.out.println("ChangeForm not found for formID " + args[1] + " - is the quest running in this save?");
             return;
         }
+
         ChangeFormData data = form.getData(Optional.empty(), ess.getContext(), false);
         if (!(data instanceof ChangeFormQust)) {
             System.out.println("Form is not a QUST changeform.");
             return;
         }
+
         ChangeFormQust qust = (ChangeFormQust) data;
         qust.setStagesDirect(stages, true);
        if (args.length >= 5) {
@@ -73,6 +84,7 @@ for (ChangeForm cf : ess.getChangeForms()) {
     qust.setQuestFlagsDirect(flagsValue);
 }
 qust.setObjectivesEmpty();
+
         int existingFlags = form.getChangeFlags().FLAGS;
 int newFlagsValue = existingFlags | (1 << 31) | (1 << 26) | (1 << 29);
 Flags.Int newFlags = new Flags.Int(newFlagsValue); // CHANGE_QUEST_STAGES bit
