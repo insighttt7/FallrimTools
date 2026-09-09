@@ -123,12 +123,18 @@ for (ChangeForm cf : ess.getChangeForms()) {
     short flagsValue = (short) Integer.parseInt(args[4], 16);
     qust.setQuestFlagsDirect(flagsValue);
 }
-qust.setObjectivesEmpty();
+boolean skipObjectives = args.length >= 6 && args[5].equals("no-objectives");
 
-        int existingFlags = form.getChangeFlags().FLAGS;
-int newFlagsValue = existingFlags | (1 << 31) | (1 << 26) | (1 << 29);
-Flags.Int newFlags = new Flags.Int(newFlagsValue); // CHANGE_QUEST_STAGES bit
-        form.updateRawData(qust, newFlags);
+int existingFlags = form.getChangeFlags().FLAGS;
+int newFlagsValue = existingFlags | (1 << 31) | (1 << 26);
+
+if (!skipObjectives) {
+    qust.setObjectivesEmpty();
+    newFlagsValue |= (1 << 29);
+}
+
+Flags.Int newFlags = new Flags.Int(newFlagsValue);
+form.updateRawData(qust, newFlags);
 ESS.writeESS(ess, outputPath, false);
 System.out.println("Done. Wrote " + outputPath);
     }
