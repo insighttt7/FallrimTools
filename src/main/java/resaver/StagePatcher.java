@@ -79,12 +79,7 @@ if (args.length >= 2 && args[1].equals("--list")) {
 
     ESS.writeESS(targetEss, mergeOutput, false);
     System.out.println("Merge done. Wrote " + mergeOutput);
-    return;
-}
-
-    ESS.writeESS(targetEss, mergeOutput, false);
-    System.out.println("Merge done. Wrote " + mergeOutput);
-    return;
+     return;
 }
 
 if (args.length >= 4 && args[1].equals("--rawpatch")) {
@@ -167,7 +162,6 @@ if (args.length >= 4 && args[1].equals("--rawpatch")) {
     return;
 }
 
-int formID = (int) Long.parseLong(args[1], 16);        
 int formID = (int) Long.parseLong(args[1], 16);
 Path outputPath = Paths.get(args[2]);
 String[] stageParts = args[3].split(",");
