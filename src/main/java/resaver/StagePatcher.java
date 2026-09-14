@@ -13,6 +13,8 @@ import resaver.ess.ModelBuilder;
 import resaver.ProgressModel;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import resaver.ess.ChangeFlagConstants;
+import resaver.ess.ChangeFlagConstantsQust;
 
 public class StagePatcher {
 
@@ -80,6 +82,92 @@ if (args.length >= 2 && args[1].equals("--list")) {
     return;
 }
 
+    ESS.writeESS(targetEss, mergeOutput, false);
+    System.out.println("Merge done. Wrote " + mergeOutput);
+    return;
+}
+
+if (args.length >= 4 && args[1].equals("--rawpatch")) {
+    int rawFormID = (int) Long.parseLong(args[2], 16);
+    Path rawOutputPath = Paths.get(args[3]);
+    String[] stagePatches = args[4].split(",");
+
+    ChangeForm form = null;
+    for (ChangeForm cf : essEarly.getChangeForms()) {
+        if (cf.getRefID().equals(rawFormID)) {
+            form = cf;
+            break;
+        }
+    }
+    if (form == null) {
+        System.out.println("ChangeForm not found");
+        return;
+    }
+
+    ByteBuffer bodyBuf = form.getBodyData();
+    byte[] raw = new byte[bodyBuf.remaining()];
+    bodyBuf.get(raw);
+
+    int pos = 0;
+    boolean hasQuestFlags = form.getChangeFlags().getFlag(ChangeFlagConstantsQust.CHANGE_QUEST_FLAGS);
+    int questFlagsOffset = -1;
+    if (hasQuestFlags) {
+        questFlagsOffset = pos;
+        pos += 2;
+    }
+
+    boolean hasStages = form.getChangeFlags().getFlag(ChangeFlagConstantsQust.CHANGE_QUEST_STAGES);
+    if (hasStages) {
+        int vsvalByte = raw[pos] & 0xFF;
+        int count = vsvalByte >>> 2;
+        pos += 1;
+
+        for (int i = 0; i < count; i++) {
+            int stageId = ((raw[pos+1] & 0xFF) << 8) | (raw[pos] & 0xFF);
+            int statusOffset = pos + 2;
+
+            for (String patch : stagePatches) {
+                String[] parts = patch.split(":");
+                int targetStage = Integer.parseInt(parts[0]);
+                byte targetStatus = (byte) Integer.parseInt(parts[1]);
+                if (stageId == targetStage) {
+                    raw[statusOffset] = targetStatus;
+                    System.out.println("Patched stage " + targetStage + " -> status " + targetStatus);
+                }
+            }
+            pos += 3;
+        }
+    }
+
+    if (hasQuestFlags && args.length >= 6 && args[5].equals("complete")) {
+        int flagsVal = ((raw[questFlagsOffset+1] & 0xFF) << 8) | (raw[questFlagsOffset] & 0xFF);
+        flagsVal |= (1 << 1);
+        raw[questFlagsOffset] = (byte) (flagsVal & 0xFF);
+        raw[questFlagsOffset+1] = (byte) ((flagsVal >> 8) & 0xFF);
+        System.out.println("Set kCompleted flag");
+    }
+
+    final byte[] finalRaw = raw;
+    ChangeFormData rawWrapper = new ChangeFormData() {
+        @Override
+        public void write(ByteBuffer output) { output.put(finalRaw); }
+        @Override
+        public int calculateSize() { return finalRaw.length; }
+        @Override
+        public ChangeFlagConstants[] getChangeConstants() { return new ChangeFlagConstants[0]; }
+        @Override
+        public String getInfo(Optional<resaver.Analysis> analysis, ESS save) { return "Raw patched"; }
+        @Override
+        public boolean matches(Optional<resaver.Analysis> analysis, String mod) { return false; }
+    };
+
+    form.updateRawData(rawWrapper, form.getChangeFlags());
+    ESS.writeESS(essEarly, rawOutputPath, false);
+    System.out.println("Done. Wrote " + rawOutputPath);
+    return;
+}
+
+int formID = (int) Long.parseLong(args[1], 16);        
 int formID = (int) Long.parseLong(args[1], 16);
 Path outputPath = Paths.get(args[2]);
 String[] stageParts = args[3].split(",");
